@@ -1,0 +1,33 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.isakskogstad/oecd-mcp",
+  "title": "OECD MCP Server",
+  "description": "OECD economic and statistical data via SDMX API. Access 5,000+ datasets across 17 categories.",
+  "version": "3.0.0",
+  "websiteUrl": "https://github.com/isakskogstad/OECD-MCP-server",
+  "repository": {
+    "url": "https://github.com/isakskogstad/OECD-MCP-server",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "oecd-mcp-server",
+      "version": "3.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeHint": "node"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://oecd-mcp-server.onrender.com/mcp"
+    },
+    {
+      "type": "sse",
+      "url": "https://oecd-mcp-server.onrender.com/sse"
+    }
+  ]
+}

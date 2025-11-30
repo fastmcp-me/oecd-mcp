@@ -14,11 +14,13 @@ Model Context Protocol (MCP) server providing access to OECD statistical data vi
 ## Project Structure
 - `src/` - Source code
   - `http-server.ts` - Main HTTP server with SSE transport
+  - `http-jsonrpc-transport.ts` - Custom HTTP/JSON-RPC transport
   - `index.ts` - STDIO transport for local usage
   - `oecd-client.ts` - OECD SDMX API client
 - `tests/` - Test files
 - `Dockerfile` - Container configuration
 - `render.yaml` - Render deployment config
+- `server.json` - MCP Registry metadata
 - `backups/` - Automatic backups (session-start, session-end, changes)
 
 ## MCP Capabilities
@@ -45,10 +47,19 @@ Model Context Protocol (MCP) server providing access to OECD statistical data vi
 
 ## Deployment Info
 - **Render URL:** https://oecd-mcp-server.onrender.com
-- **MCP Endpoint:** GET /mcp (SSE)
+- **MCP Endpoints:**
+  - POST /mcp (HTTP/JSON-RPC - recommended)
+  - GET /mcp (SSE - legacy)
 - **Health Check:** GET /health
 - **Plan:** Free tier (cold starts after inactivity)
 - **Region:** Frankfurt
+
+## MCP Registry Publishing
+- **Server Name:** io.github.isakskogstad/oecd-mcp
+- **NPM Package:** oecd-mcp-server
+- **Version:** 3.0.0
+- **Registry File:** server.json (compatible with MCP Registry)
+- **Publishing:** Ready for submission to registry.modelcontextprotocol.io
 
 ## Known Issues (RESOLVED ✅)
 
