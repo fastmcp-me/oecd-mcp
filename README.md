@@ -186,7 +186,22 @@ Add to `mcp.json` in project root:
 - **SDMX-Compliant** - Uses OECD SDMX v2.1 API
 - **No Authentication Required** - Public API access
 - **Automated Monitoring** - Daily contract tests ensure reliability
-- **Dual Transport** - stdio for local use, HTTP/SSE for remote access
+- **Multiple Transports** - stdio, HTTP/JSON-RPC, and HTTP/SSE supported
+
+### Transport Methods
+
+The OECD MCP Server supports **three transport protocols** for maximum flexibility:
+
+| Transport | Use Case | Endpoint | Method |
+|-----------|----------|----------|--------|
+| **stdio** | Local installation (Claude Desktop, CLI) | N/A | Standard input/output |
+| **HTTP/JSON-RPC** | Simple synchronous requests (ChatGPT, simple clients) | `/mcp` | POST |
+| **HTTP/SSE** | Persistent connections with server-to-client push | `/mcp` | GET |
+
+**Recommended for remote access:**
+- **ChatGPT & simple HTTP clients:** Use HTTP/JSON-RPC (POST)
+- **Claude Desktop & advanced clients:** Use HTTP/SSE (GET)
+- **Local development:** Use stdio with npx
 
 ---
 
