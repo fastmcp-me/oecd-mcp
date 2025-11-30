@@ -15,46 +15,51 @@ OECD MCP Server connects LLMs and AI chatbots to the Organisation for Economic C
 
 ## Quick Start
 
-### Remote Server (No Installation Required!)
+### 🌐 Remote Server (No Installation Required!)
+
+The simplest way to get started - just use this URL in any MCP-compatible client:
 
 ```
 https://oecd-mcp-server.onrender.com/mcp
 ```
 
-See [Client Configuration](#client-configuration) below for how to connect from your AI client.
+**Works instantly with:**
+- ChatGPT (Developer Mode)
+- Claude Web (claude.ai)
+- VS Code (GitHub Copilot)
+- Cursor AI
+- And 400+ other MCP clients
 
-### Local Installation
+See [Client Configuration](#client-configuration) below for specific setup instructions.
 
-**With npx (fastest):**
+### 💻 Local Installation
+
+**Quick start with npx (recommended):**
 ```bash
 npx oecd-mcp-server
 ```
 
-**With global installation:**
+**Global installation:**
 ```bash
 npm install -g oecd-mcp-server
 oecd-mcp-server
 ```
 
+**Requirements:**
+- Node.js >= 18.0.0
+- npm or npx
+
 ---
 
 ## Client Configuration
 
-### ChatGPT (Developer Mode)
+### Anthropic Products
 
-1. Enable **Developer Mode** in ChatGPT Settings → Connectors
-2. Click **Create** to create a new connector
-3. Enter:
-   - **Connector name:** OECD
-   - **Description:** OECD economic and statistical data
-   - **Connector URL:**
-     ```
-     https://oecd-mcp-server.onrender.com/mcp
-     ```
-4. Click **Create**
+#### Claude Web (claude.ai)
 
-### Claude Web (claude.ai)
+**Available on:** Pro, Max, Team, and Enterprise plans
 
+**Setup:**
 1. Go to **Settings** → **Integrations** (Connectors)
 2. Click **Add custom connector**
 3. Enter URL:
@@ -63,13 +68,17 @@ oecd-mcp-server
    ```
 4. Click **Add**
 
-### Claude Desktop
+**That's it!** The OECD MCP server is now available in your Claude Web conversations.
 
-Add to configuration file:
+#### Claude Desktop
+
+**Configuration file locations:**
 - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
 - **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
-**With remote server:**
+**Method 1: Remote Server (recommended)**
+
+Add this to your config file:
 ```json
 {
   "mcpServers": {
@@ -80,7 +89,8 @@ Add to configuration file:
 }
 ```
 
-**With npx (local):**
+**Method 2: Local Installation (via npx)**
+
 ```json
 {
   "mcpServers": {
@@ -92,46 +102,111 @@ Add to configuration file:
 }
 ```
 
-### Claude Code (CLI)
+**After configuration:**
+- Restart Claude Desktop
+- Look for the hammer icon (🔨) in the bottom right corner
+- The OECD MCP server tools are now available!
 
-**With remote server (HTTP):**
+#### Claude Code (CLI)
+
+**Remote Server - HTTP Transport (recommended):**
 ```bash
 claude mcp add --transport http oecd https://oecd-mcp-server.onrender.com/mcp
 ```
 
-**With remote server (SSE):**
+**Remote Server - SSE Transport (legacy):**
 ```bash
 claude mcp add --transport sse oecd https://oecd-mcp-server.onrender.com/sse
 ```
 
-**With npx (local):**
+**Local Installation:**
 ```bash
 claude mcp add oecd -- npx -y oecd-mcp-server
 ```
 
-Verify with:
+**Verify installation:**
 ```bash
 claude mcp list
 ```
 
-### OpenAI Codex CLI
+**Common commands:**
+```bash
+# Remove server
+claude mcp remove oecd
 
-Add to `~/.codex/config.toml`:
+# Debug mode
+claude --mcp-debug
+```
 
+---
+
+### OpenAI Products
+
+#### ChatGPT (Developer Mode)
+
+**Available on:** Plus and Pro users (web), Business and Enterprise users (with admin approval)
+
+**Setup:**
+1. Open ChatGPT Settings → **Connectors** → **Advanced**
+2. Enable **Developer Mode**
+3. Click **Create** to create a new connector
+4. Enter:
+   - **Connector name:** OECD Statistics
+   - **Description:** OECD economic and statistical data - 5,000+ datasets
+   - **Connector URL:**
+     ```
+     https://oecd-mcp-server.onrender.com/mcp
+     ```
+5. Click **Create**
+
+**Note:** ChatGPT cannot connect to localhost servers. For local development, use a tunnel service like ngrok.
+
+**Supported transports:**
+- ✅ HTTP/Streamable (recommended)
+- ✅ SSE (legacy support)
+
+#### OpenAI Codex CLI
+
+**Config file:** `~/.codex/config.toml`
+
+**Add OECD MCP server:**
 ```toml
 [mcp_servers.oecd]
 url = "https://oecd-mcp-server.onrender.com/sse"
 ```
 
-Or via CLI:
+**Or via CLI:**
 ```bash
 codex mcp add oecd --url https://oecd-mcp-server.onrender.com/sse
 ```
 
-### Gemini CLI
+---
 
-Add to `~/.gemini/settings.json`:
+### Google Products
 
+#### Gemini / Google AI Studio
+
+Google AI Studio doesn't have direct MCP client support yet, but you can use MCP servers as tools via:
+
+**Community MCP Servers:**
+- [eternnoir/aistudio-mcp-server](https://github.com/eternnoir/aistudio-mcp-server) - Gemini API integration for MCP
+- [bsmi021/mcp-gemini-server](https://github.com/bsmi021/mcp-gemini-server) - Wraps Google Generative AI SDK
+
+**Installation (for use with other MCP clients):**
+```bash
+npx -y aistudio-mcp-server
+```
+
+**Environment variable required:**
+```bash
+export GEMINI_API_KEY="your-api-key"
+```
+
+#### Gemini CLI (Unofficial)
+
+**Config file:** `~/.gemini/settings.json`
+
+**Add OECD MCP server:**
 ```json
 {
   "mcpServers": {
@@ -142,34 +217,108 @@ Add to `~/.gemini/settings.json`:
 }
 ```
 
-Or via CLI:
+**Or via CLI:**
 ```bash
 gemini mcp add oecd --url https://oecd-mcp-server.onrender.com/sse
 ```
 
-### Firebase Studio / Android Studio
+---
 
-Add to `mcp.json` in project root:
+### Microsoft Products
 
+#### VS Code with GitHub Copilot
+
+**Requirements:**
+- VS Code >= 1.102 (for MCP support)
+- GitHub Copilot subscription
+
+**Setup:**
+1. Open VS Code **Settings** → **Extensions** → **MCP**
+2. Click **Add MCP Server**
+3. Choose configuration method:
+
+**Method 1: Remote Server**
 ```json
 {
   "mcpServers": {
     "oecd": {
-      "url": "https://oecd-mcp-server.onrender.com/sse"
+      "url": "https://oecd-mcp-server.onrender.com/mcp",
+      "transport": "http"
     }
   }
 }
 ```
 
-### Other MCP Clients
+**Method 2: Local Installation**
+```json
+{
+  "mcpServers": {
+    "oecd": {
+      "command": "npx",
+      "args": ["-y", "oecd-mcp-server"]
+    }
+  }
+}
+```
 
-**SSE transport (e.g., Lovable):**
+**Enterprise users:** Administrators can enable/disable MCP with the "MCP servers in Copilot" policy (disabled by default).
+
+**After configuration:**
+- Restart VS Code
+- GitHub Copilot can now access OECD statistical data
+- Use natural language to query datasets: "Show me GDP data for USA from 2020-2023"
+
+---
+
+### Other Popular Clients
+
+#### Cursor AI
+
+**Config file locations:**
+- **Global:** `~/.cursor/mcp.json`
+- **Project-specific:** `.cursor/mcp.json` (in project root)
+
+**Setup via UI:**
+1. Open Cursor Settings → **MCP**
+2. Click **Add new global MCP server**
+
+**Remote server config:**
+```json
+{
+  "mcpServers": {
+    "oecd": {
+      "command": "npx",
+      "args": ["-y", "oecd-mcp-server"]
+    }
+  }
+}
+```
+
+**Supports:** STDIO and Streamable HTTP transports
+
+#### Lovable.dev
+
+**For SSE transport:**
 ```json
 {
   "mcpServers": {
     "oecd": {
       "url": "https://oecd-mcp-server.onrender.com/sse",
       "transport": "sse"
+    }
+  }
+}
+```
+
+#### Firebase Studio / Android Studio
+
+**Config file:** `mcp.json` in project root
+
+```json
+{
+  "mcpServers": {
+    "oecd": {
+      "url": "https://oecd-mcp-server.onrender.com/sse"
     }
   }
 }
