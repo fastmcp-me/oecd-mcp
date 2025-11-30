@@ -50,23 +50,22 @@ Model Context Protocol (MCP) server providing access to OECD statistical data vi
 - **Plan:** Free tier (cold starts after inactivity)
 - **Region:** Frankfurt
 
-## Known Issues
-### ⚠️ CRITICAL: MCP Transport Mismatch
-The `/mcp` endpoint uses **SSE (Server-Sent Events)** transport, NOT JSON-RPC POST.
+## Known Issues (RESOLVED ✅)
 
-**Problem:**
-- Clients expecting HTTP/JSON-RPC will fail
-- POST to /mcp returns stub message, not MCP protocol
+### ✅ FIXED: MCP Transport Support
+**Status:** Resolved as of 2025-11-30
 
-**Why it's slow/not working:**
-1. **Cold Starts** - Free tier spins down after inactivity (30-60s startup)
-2. **Wrong Transport** - Clients using POST instead of SSE GET
-3. **MCP Protocol** - Requires SSE connection + message endpoint
+**What was fixed:**
+1. ✅ Added HTTP/JSON-RPC transport for synchronous requests
+2. ✅ POST /mcp now properly handles MCP protocol
+3. ✅ Both SSE (GET) and JSON-RPC (POST) work correctly
+4. ✅ Compatible with ChatGPT, Claude, and all HTTP clients
 
-**Solution:**
-- Use SSE-compatible MCP client
-- Upgrade to paid Render plan (always-on, no cold starts)
-- Or run locally: `npx oecd-mcp-server`
+**Remaining consideration:**
+- **Cold Starts** - Free tier still spins down after 15 min inactivity
+  - First request after idle period takes 30-60s (container startup)
+  - Subsequent requests are fast (~100-150ms)
+  - Upgrade to paid plan ($7/mo) for always-on performance
 
 ## Build Commands
 ```bash
