@@ -10,5 +10,6 @@ dist/
 coverage/
 tests/
 *.md
+!README.md
 .DS_Store
 Thumbs.db
