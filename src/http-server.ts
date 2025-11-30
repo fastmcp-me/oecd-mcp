@@ -25,6 +25,223 @@ app.use(express.json());
 
 const client = new OECDClient();
 
+// Root endpoint - Landing page with server information
+app.get('/', (_req, res) => {
+  res.send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OECD MCP Server</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 40px;
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 2.5em;
+    }
+    .tagline {
+      color: #666;
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+    .badge {
+      display: inline-block;
+      margin: 5px;
+      padding: 6px 12px;
+      background: #667eea;
+      color: white;
+      border-radius: 20px;
+      font-size: 0.9em;
+      text-decoration: none;
+    }
+    .badge:hover {
+      background: #5568d3;
+    }
+    .section {
+      margin: 30px 0;
+    }
+    .section h2 {
+      color: #444;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 8px;
+    }
+    .endpoint {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+    }
+    .endpoint code {
+      color: #667eea;
+      font-weight: bold;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .stat {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 2em;
+      font-weight: bold;
+      color: #667eea;
+    }
+    .stat-label {
+      color: #666;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+    .cta {
+      background: #667eea;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .cta:hover {
+      background: #5568d3;
+    }
+    ul {
+      list-style-position: inside;
+      margin: 10px 0;
+    }
+    li {
+      margin: 8px 0;
+      padding-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌍 OECD MCP Server</h1>
+    <p class="tagline">Model Context Protocol server for OECD economic and statistical data</p>
+
+    <div>
+      <a href="https://www.npmjs.com/package/oecd-mcp-server" class="badge">📦 NPM</a>
+      <a href="https://github.com/isakskogstad/OECD-MCP-server" class="badge">💻 GitHub</a>
+      <a href="https://github.com/isakskogstad/OECD-MCP-server/actions" class="badge">✅ Status</a>
+      <a href="https://registry.modelcontextprotocol.io/" class="badge">🔌 MCP Registry</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-number">9</div>
+        <div class="stat-label">MCP Tools</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">5,000+</div>
+        <div class="stat-label">Datasets</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">17</div>
+        <div class="stat-label">Categories</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">38</div>
+        <div class="stat-label">Countries</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🚀 Quick Start</h2>
+      <p><strong>No installation required!</strong> Use the remote MCP server:</p>
+      <div class="endpoint">
+        <code>https://oecd-mcp-server.onrender.com/mcp</code>
+      </div>
+      <p style="margin-top: 15px;">Or install locally:</p>
+      <div class="endpoint">
+        <code>npx oecd-mcp-server</code>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📊 What's Included</h2>
+      <ul>
+        <li><strong>Economic Data:</strong> GDP, inflation, interest rates, economic forecasts</li>
+        <li><strong>Employment:</strong> Unemployment, wages, labor market statistics</li>
+        <li><strong>Health:</strong> Healthcare systems, life expectancy, health spending</li>
+        <li><strong>Education:</strong> PISA results, education outcomes and spending</li>
+        <li><strong>Environment:</strong> Climate data, emissions, green growth indicators</li>
+        <li><strong>Trade:</strong> International trade, imports, exports statistics</li>
+        <li><strong>And much more:</strong> Energy, taxation, innovation, social protection</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>🔌 MCP Endpoints</h2>
+      <div class="endpoint">
+        <strong>MCP Protocol:</strong> <code>/mcp</code>
+      </div>
+      <div class="endpoint">
+        <strong>Server-Sent Events:</strong> <code>/sse</code>
+      </div>
+      <div class="endpoint">
+        <strong>JSON-RPC:</strong> <code>/rpc</code>
+      </div>
+      <div class="endpoint">
+        <strong>Health Check:</strong> <code>/health</code>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>💡 Supported Clients</h2>
+      <ul>
+        <li>ChatGPT (Developer Mode)</li>
+        <li>Claude (Web, Desktop, Code CLI)</li>
+        <li>OpenAI Codex CLI</li>
+        <li>Gemini CLI</li>
+        <li>Firebase Studio / Android Studio</li>
+        <li>Any MCP-compatible client</li>
+      </ul>
+    </div>
+
+    <a href="https://github.com/isakskogstad/OECD-MCP-server#readme" class="cta">
+      📖 View Full Documentation
+    </a>
+
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 0.9em;">
+      <p><strong>Version:</strong> 3.0.0</p>
+      <p><strong>Status:</strong> ✅ Healthy</p>
+      <p><strong>Data Source:</strong> <a href="https://www.oecd.org/" style="color: #667eea;">OECD.org</a></p>
+      <p><strong>Created by:</strong> Isak Skogstad</p>
+    </div>
+  </div>
+</body>
+</html>
+  `);
+});
+
 // Health check endpoint
 app.get('/health', (_req, res) => {
   res.json({
