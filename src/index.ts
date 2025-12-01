@@ -98,7 +98,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: 'query_data',
         description:
-          'Query actual statistical data from an OECD dataset. Use dimension filters to specify what data to retrieve.',
+          'Query actual statistical data from an OECD dataset. ⚠️ IMPORTANT: Defaults to last 100 observations (max 1000) to protect context window. Use filters, time periods, or last_n_observations to control data size. Large datasets (e.g. SOCX_AGG) can have 70,000+ observations - always specify limits!',
         inputSchema: {
           type: 'object',
           properties: {
@@ -121,7 +121,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
             last_n_observations: {
               type: 'number',
-              description: 'Get only the last N observations',
+              description: 'Get only the last N observations (default: 100, max: 1000 to protect against context overflow)',
             },
           },
           required: ['dataflow_id'],
@@ -255,19 +255,45 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           last_n_observations?: number;
         };
 
+        // Apply safety limits to protect LLM context window
+        const DEFAULT_LIMIT = 100;
+        const MAX_LIMIT = 1000;
+
+        let effectiveLimit = last_n_observations ?? DEFAULT_LIMIT;
+        let limitApplied = false;
+
+        if (effectiveLimit > MAX_LIMIT) {
+          effectiveLimit = MAX_LIMIT;
+          limitApplied = true;
+        }
+
         const data = await client.queryData({
           dataflowId: dataflow_id,
           filter,
           startPeriod: start_period,
           endPeriod: end_period,
-          lastNObservations: last_n_observations,
+          lastNObservations: effectiveLimit,
         });
+
+        // Add warning if limit was applied or dataset is large
+        let response = JSON.stringify(data, null, 2);
+
+        if (limitApplied || data.length >= MAX_LIMIT * 0.8) {
+          const warning = {
+            warning: limitApplied
+              ? `⚠️ Requested ${last_n_observations} observations but limited to ${MAX_LIMIT} to protect context window.`
+              : `⚠️ Returning ${data.length} observations (near max limit of ${MAX_LIMIT}). Consider using filters or time periods to reduce data size.`,
+            total_observations: data.length,
+            data: data
+          };
+          response = JSON.stringify(warning, null, 2);
+        }
 
         return {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(data, null, 2),
+              text: response,
             },
           ],
         };
