@@ -149,7 +149,12 @@ export class OECDSDMXClient {
     }
 
     const data = await response.json();
-    return this.parseDataObservations(data);
+
+    // Parse observations with client-side limit as backup
+    // OECD API sometimes ignores lastNObservations for large datasets
+    const observations = this.parseDataObservations(data, options.lastNObservations);
+
+    return observations;
   }
 
   /**
@@ -174,7 +179,7 @@ export class OECDSDMXClient {
 
   // ========== PRIVATE PARSING METHODS ==========
 
-  private parseDataObservations(data: any): SDMXObservation[] {
+  private parseDataObservations(data: any, clientSideLimit?: number): SDMXObservation[] {
     try {
       // SDMX-JSON data format
       const observations: SDMXObservation[] = [];
@@ -188,6 +193,12 @@ export class OECDSDMXClient {
           const obs = (seriesData as any).observations || {};
 
           for (const [obsKey, obsValue] of Object.entries(obs)) {
+            // Apply client-side limit as backup for when OECD API ignores lastNObservations
+            if (clientSideLimit && observations.length >= clientSideLimit) {
+              console.warn(`⚠️  Client-side limit reached: ${clientSideLimit} observations. OECD API may have ignored lastNObservations parameter.`);
+              return observations;
+            }
+
             const value = Array.isArray(obsValue) ? obsValue[0] : obsValue;
 
             observations.push({
