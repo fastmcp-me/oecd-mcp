@@ -13,12 +13,37 @@ import {
   DataQuery,
   IndicatorSearch,
 } from './types.js';
+import { SupabaseCache } from './cache/supabase-cache.js';
+
+export interface OECDClientOptions {
+  enableCache?: boolean;
+  supabaseUrl?: string;
+  supabaseKey?: string;
+}
 
 export class OECDClient {
   private sdmxClient: OECDSDMXClient;
+  public cache?: SupabaseCache; // Public for access to cache stats
 
-  constructor() {
+  constructor(options?: OECDClientOptions) {
     this.sdmxClient = new OECDSDMXClient();
+
+    // Initialize cache if enabled and credentials provided
+    if (options?.enableCache) {
+      const supabaseUrl =
+        options.supabaseUrl || process.env.SUPABASE_URL;
+      const supabaseKey =
+        options.supabaseKey || process.env.SUPABASE_KEY;
+
+      if (supabaseUrl && supabaseKey) {
+        this.cache = new SupabaseCache(supabaseUrl, supabaseKey);
+        console.log('✅ Supabase cache enabled');
+      } else {
+        console.warn(
+          '⚠️  Cache enabled but missing SUPABASE_URL or SUPABASE_KEY - running without cache'
+        );
+      }
+    }
   }
 
   /**
@@ -84,14 +109,52 @@ export class OECDClient {
   }
 
   /**
-   * Query data from a dataflow
+   * Query data from a dataflow with Supabase cache support
    */
   async queryData(params: DataQuery) {
-    return this.sdmxClient.queryData(params.dataflowId, params.filter || 'all', {
+    // Try cache first if enabled
+    if (this.cache) {
+      const cacheKey = this.cache.generateCacheKey({
+        dataflowId: params.dataflowId,
+        filter: params.filter,
+        startPeriod: params.startPeriod,
+        endPeriod: params.endPeriod,
+        lastNObservations: params.lastNObservations,
+      });
+
+      const cached = await this.cache.getCachedObservations(cacheKey);
+      if (cached) {
+        return cached;
+      }
+    }
+
+    // Cache miss - fetch from OECD API
+    const data = await this.sdmxClient.queryData(params.dataflowId, params.filter || 'all', {
       startPeriod: params.startPeriod,
       endPeriod: params.endPeriod,
       lastNObservations: params.lastNObservations,
     });
+
+    // Store in cache for future requests
+    if (this.cache) {
+      const cacheKey = this.cache.generateCacheKey({
+        dataflowId: params.dataflowId,
+        filter: params.filter,
+        startPeriod: params.startPeriod,
+        endPeriod: params.endPeriod,
+        lastNObservations: params.lastNObservations,
+      });
+
+      await this.cache.storeCachedObservations(cacheKey, data, {
+        dataflowId: params.dataflowId,
+        filter: params.filter,
+        startPeriod: params.startPeriod,
+        endPeriod: params.endPeriod,
+        lastNObservations: params.lastNObservations,
+      });
+    }
+
+    return data;
   }
 
   /**

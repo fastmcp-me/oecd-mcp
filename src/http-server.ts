@@ -37,7 +37,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const client = new OECDClient();
+// Initialize OECD client with Supabase cache (if configured)
+const client = new OECDClient({
+  enableCache: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_KEY),
+  supabaseUrl: process.env.SUPABASE_URL,
+  supabaseKey: process.env.SUPABASE_KEY,
+});
 
 /**
  * Create and configure an MCP server instance with all handlers
