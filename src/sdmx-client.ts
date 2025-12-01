@@ -47,6 +47,8 @@ export class OECDSDMXClient {
   private agency: string;
   private lastRequestTime: number = 0;
   private readonly MIN_REQUEST_INTERVAL_MS = 1500; // 1.5 seconds between requests to avoid rate limiting
+  private readonly REQUEST_TIMEOUT_MS = 30000; // 30 second timeout for API requests
+  private requestQueue: Promise<void> = Promise.resolve(); // Queue for rate limiting
 
   constructor(baseUrl: string = OECD_SDMX_BASE, agency: string = OECD_AGENCY) {
     this.baseUrl = baseUrl;
@@ -56,18 +58,36 @@ export class OECDSDMXClient {
   /**
    * Rate limiting: Ensure minimum delay between API requests
    * OECD SDMX API has strict per-IP rate limiting (~20-30 rapid requests trigger blocking)
+   * Uses a queue to prevent race conditions with concurrent requests
    */
   private async enforceRateLimit(): Promise<void> {
-    const now = Date.now();
-    const timeSinceLastRequest = now - this.lastRequestTime;
+    // Chain this request to the queue to prevent race conditions
+    this.requestQueue = this.requestQueue.then(async () => {
+      const now = Date.now();
+      const timeSinceLastRequest = now - this.lastRequestTime;
 
-    if (timeSinceLastRequest < this.MIN_REQUEST_INTERVAL_MS) {
-      const delayNeeded = this.MIN_REQUEST_INTERVAL_MS - timeSinceLastRequest;
-      console.log(`⏱️  Rate limiting: waiting ${delayNeeded}ms before next OECD API request`);
-      await new Promise(resolve => setTimeout(resolve, delayNeeded));
+      if (timeSinceLastRequest < this.MIN_REQUEST_INTERVAL_MS) {
+        const delayNeeded = this.MIN_REQUEST_INTERVAL_MS - timeSinceLastRequest;
+        console.log(`⏱️  Rate limiting: waiting ${delayNeeded}ms before next OECD API request`);
+        await new Promise(resolve => setTimeout(resolve, delayNeeded));
+      }
+
+      this.lastRequestTime = Date.now();
+    });
+
+    return this.requestQueue;
+  }
+
+  /**
+   * Validate and sanitize filter parameter to prevent SSRF attacks
+   * Only allows alphanumeric characters, dots, underscores, hyphens, colons, and plus signs
+   */
+  private sanitizeFilter(filter: string): string {
+    // Allow SDMX filter syntax: alphanumeric, dots, underscores, hyphens, colons, plus, asterisks
+    if (!/^[A-Za-z0-9._\-:+*]+$/.test(filter)) {
+      throw new Error(`Invalid filter format: "${filter}". Only alphanumeric characters and ._-:+* are allowed.`);
     }
-
-    this.lastRequestTime = Date.now();
+    return encodeURIComponent(filter);
   }
 
   /**
@@ -153,30 +173,47 @@ export class OECDSDMXClient {
     if (options.endPeriod) params.append('endPeriod', options.endPeriod);
     if (options.lastNObservations) params.append('lastNObservations', options.lastNObservations.toString());
 
+    // Sanitize filter to prevent SSRF attacks
+    const sanitizedFilter = filter === 'all' ? 'all' : this.sanitizeFilter(filter);
+
     // Format: /data/{AGENCY},{DSD_ID}@{DF_ID}/{filter}
     // NOTE: Version parameter omitted - OECD SDMX API doesn't require/accept it for most dataflows
-    const url = `${this.baseUrl}/data/${knownDf.agency},${knownDf.fullId}/${filter}?${params.toString()}`;
+    const url = `${this.baseUrl}/data/${knownDf.agency},${knownDf.fullId}/${sanitizedFilter}?${params.toString()}`;
 
     // Enforce rate limiting BEFORE making the API request
     await this.enforceRateLimit();
 
-    const response = await fetch(url, {
-      headers: {
-        Accept: 'application/json',
-      },
-    });
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.REQUEST_TIMEOUT_MS);
 
-    if (!response.ok) {
-      throw new Error(`SDMX API error: ${response.status} ${response.statusText}`);
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Accept: 'application/json',
+        },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`OECD API request failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Parse observations with client-side limit as backup
+      // OECD API sometimes ignores lastNObservations for large datasets
+      const observations = this.parseDataObservations(data, options.lastNObservations);
+
+      return observations;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`OECD API request timed out after ${this.REQUEST_TIMEOUT_MS / 1000} seconds`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    const data = await response.json();
-
-    // Parse observations with client-side limit as backup
-    // OECD API sometimes ignores lastNObservations for large datasets
-    const observations = this.parseDataObservations(data, options.lastNObservations);
-
-    return observations;
   }
 
   /**
