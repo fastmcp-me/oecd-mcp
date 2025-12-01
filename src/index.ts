@@ -325,6 +325,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'search_indicators': {
         const { indicator, category } = args as { indicator: string; category?: string };
+
+        // Validate required parameter
+        if (!indicator) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: 'Error: Missing required parameter "indicator". Please provide a search term (e.g., "inflation", "unemployment", "GDP").',
+              },
+            ],
+            isError: true,
+          };
+        }
+
         const results = await client.searchIndicators({ indicator, category });
         return {
           content: [
