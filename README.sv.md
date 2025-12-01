@@ -28,6 +28,8 @@ Använd denna URL i vilken MCP-kompatibel klient som helst:
 https://oecd-mcp-server.onrender.com/mcp
 ```
 
+> **Ingen autentisering krävs!** Klistra bara in URL:en - fungerar direkt med vilken MCP-klient som helst.
+
 **Kompatibel med:** ChatGPT, Claude Web, VS Code Copilot, Cursor, och 400+ MCP-klienter.
 
 ### Lokal Installation
@@ -316,7 +318,8 @@ docker run -p 3000:3000 oecd-mcp
 
 ---
 
-## 🤝 Bidra
+<details>
+<summary><b>🤝 Bidra</b> (Klicka för att expandera)</summary>
 
 Bidrag är välkomna! Förbättringsområden:
 - Lägg till verifierade dataflöden till `src/known-dataflows.ts`
@@ -325,6 +328,8 @@ Bidrag är välkomna! Förbättringsområden:
 - Buggfixar och tester
 
 [Skicka en pull request](https://github.com/isakskogstad/OECD-MCP/pulls)
+
+</details>
 
 ---
 
