@@ -311,6 +311,37 @@ export const KNOWN_DATAFLOWS: KnownDataflow[] = [
     description: 'Official Development Financing beyond ODA - includes other official flows to developing countries.',
     category: 'DEV',
   },
+
+  // ========================================
+  // INNOVATION & TECHNOLOGY (OECD.STI.STP, OECD.ENV.EPI, OECD.STI.DEP)
+  // ========================================
+  {
+    id: 'MSTI',
+    fullId: 'DSD_MSTI@DF_MSTI',
+    agency: 'OECD.STI.STP',
+    version: '1.0',
+    name: 'Main Science and Technology Indicators',
+    description: 'Key R&D indicators including R&D expenditure, researchers, patents, and innovation metrics by country and sector.',
+    category: 'STI',
+  },
+  {
+    id: 'PAT_DEV',
+    fullId: 'DSD_PAT_DEV@DF_PAT_DEV',
+    agency: 'OECD.ENV.EPI',
+    version: '1.0',
+    name: 'Patents - Technology Development',
+    description: 'Patent data for technology development analysis, including environment-related technologies and innovation trends.',
+    category: 'STI',
+  },
+  {
+    id: 'ICT_IND',
+    fullId: 'DSD_ICT_HH_IND@DF_IND',
+    agency: 'OECD.STI.DEP',
+    version: '1.0',
+    name: 'ICT Access and Usage by Individuals',
+    description: 'Information and Communication Technology access and usage statistics by individuals, including internet usage, e-commerce, and digital skills.',
+    category: 'STI',
+  },
 ];
 
 /**

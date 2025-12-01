@@ -107,7 +107,7 @@ export const OECD_CATEGORIES: OECDCategory[] = [
     id: 'STI',
     name: 'Innovation and Technology',
     description: 'R&D spending, patents, digital economy, artificial intelligence',
-    exampleDatasets: ['MSTI_PUB', 'PATS_IPC', 'ICT_ACCESS'],
+    exampleDatasets: ['MSTI', 'PAT_DEV', 'ICT_IND'],
   },
   {
     id: 'TAX',
