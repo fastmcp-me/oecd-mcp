@@ -43,7 +43,7 @@ jobs:
           echo "⚠️ Contract tests not yet implemented - skipping"
           echo "TODO: Create tests/contract/api-contract.test.ts"
           exit 0
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Create issue if tests fail
         if: steps.contract_tests.outcome == 'failure'
