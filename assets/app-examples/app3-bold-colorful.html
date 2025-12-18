@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OECD Productivity Comparison</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Montserrat', sans-serif; }
+  </style>
+</head>
+<body class="min-h-screen bg-white">
+  <!-- Bold Gradient Header -->
+  <header class="bg-gradient-to-r from-teal-600 via-emerald-500 to-cyan-500 text-white py-16 px-8">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="px-4 py-1 bg-white/20 rounded-full text-sm font-semibold backdrop-blur">
+          PRODUCTIVITY DATA
+        </span>
+        <span class="px-4 py-1 bg-white/20 rounded-full text-sm font-semibold backdrop-blur">
+          2024
+        </span>
+      </div>
+      <h1 class="text-5xl font-extrabold tracking-tight mb-4">
+        GDP per Hour Worked
+      </h1>
+      <p class="text-xl text-teal-100 max-w-2xl">
+        Compare labor productivity across OECD countries — annual hours worked and economic output.
+      </p>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-5xl mx-auto px-8 -mt-8">
+    <!-- Featured Stats -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 mb-8">
+      <div class="flex flex-wrap items-center gap-4 mb-8">
+        <span class="px-5 py-2 bg-teal-100 text-teal-700 rounded-full font-bold text-sm">
+          PDB_LV Dataset
+        </span>
+        <span class="px-5 py-2 bg-emerald-100 text-emerald-700 rounded-full font-bold text-sm">
+          38 Countries
+        </span>
+        <span class="px-5 py-2 bg-cyan-100 text-cyan-700 rounded-full font-bold text-sm">
+          Annual Data
+        </span>
+      </div>
+
+      <!-- Country Comparison Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Belgium -->
+        <div class="bg-gradient-to-br from-teal-50 to-emerald-50 rounded-xl p-6 border-2 border-teal-200 hover:border-teal-400 transition-colors">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-4xl">🇧🇪</span>
+            <div>
+              <h3 class="font-bold text-slate-800 text-lg">Belgium</h3>
+              <p class="text-sm text-slate-500">Western Europe</p>
+            </div>
+          </div>
+          <div class="text-4xl font-extrabold text-teal-600 mb-2">
+            8,140
+            <span class="text-lg font-normal text-slate-400">hrs/year</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-500 font-bold">↑ 0.3%</span>
+            <span class="text-slate-400 text-sm">vs 2023</span>
+          </div>
+        </div>
+
+        <!-- Norway -->
+        <div class="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-6 border-2 border-cyan-200 hover:border-cyan-400 transition-colors">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-4xl">🇳🇴</span>
+            <div>
+              <h3 class="font-bold text-slate-800 text-lg">Norway</h3>
+              <p class="text-sm text-slate-500">Nordic</p>
+            </div>
+          </div>
+          <div class="text-4xl font-extrabold text-cyan-600 mb-2">
+            7,892
+            <span class="text-lg font-normal text-slate-400">hrs/year</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-500 font-bold">↑ 0.5%</span>
+            <span class="text-slate-400 text-sm">vs 2023</span>
+          </div>
+        </div>
+
+        <!-- Germany -->
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-6 border-2 border-emerald-200 hover:border-emerald-400 transition-colors">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-4xl">🇩🇪</span>
+            <div>
+              <h3 class="font-bold text-slate-800 text-lg">Germany</h3>
+              <p class="text-sm text-slate-500">Western Europe</p>
+            </div>
+          </div>
+          <div class="text-4xl font-extrabold text-emerald-600 mb-2">
+            7,654
+            <span class="text-lg font-normal text-slate-400">hrs/year</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-red-500 font-bold">↓ 0.2%</span>
+            <span class="text-slate-400 text-sm">vs 2023</span>
+          </div>
+        </div>
+
+        <!-- Sweden -->
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200 hover:border-blue-400 transition-colors">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-4xl">🇸🇪</span>
+            <div>
+              <h3 class="font-bold text-slate-800 text-lg">Sweden</h3>
+              <p class="text-sm text-slate-500">Nordic</p>
+            </div>
+          </div>
+          <div class="text-4xl font-extrabold text-blue-600 mb-2">
+            7,421
+            <span class="text-lg font-normal text-slate-400">hrs/year</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-500 font-bold">↑ 0.4%</span>
+            <span class="text-slate-400 text-sm">vs 2023</span>
+          </div>
+        </div>
+
+        <!-- United States -->
+        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border-2 border-indigo-200 hover:border-indigo-400 transition-colors">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-4xl">🇺🇸</span>
+            <div>
+              <h3 class="font-bold text-slate-800 text-lg">United States</h3>
+              <p class="text-sm text-slate-500">North America</p>
+            </div>
+          </div>
+          <div class="text-4xl font-extrabold text-indigo-600 mb-2">
+            8,756
+            <span class="text-lg font-normal text-slate-400">hrs/year</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-500 font-bold">↑ 0.7%</span>
+            <span class="text-slate-400 text-sm">vs 2023</span>
+          </div>
+        </div>
+
+        <!-- Japan -->
+        <div class="bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl p-6 border-2 border-rose-200 hover:border-rose-400 transition-colors">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-4xl">🇯🇵</span>
+            <div>
+              <h3 class="font-bold text-slate-800 text-lg">Japan</h3>
+              <p class="text-sm text-slate-500">East Asia</p>
+            </div>
+          </div>
+          <div class="text-4xl font-extrabold text-rose-600 mb-2">
+            7,234
+            <span class="text-lg font-normal text-slate-400">hrs/year</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-500 font-bold">↑ 0.1%</span>
+            <span class="text-slate-400 text-sm">vs 2023</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-white mb-8">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div>
+          <h2 class="text-2xl font-bold mb-2">Explore More OECD Data</h2>
+          <p class="text-slate-300">Access 5,000+ datasets across 17 categories via the MCP Server</p>
+        </div>
+        <div class="flex gap-3">
+          <span class="px-6 py-3 bg-teal-500 rounded-full font-bold">Economy</span>
+          <span class="px-6 py-3 bg-emerald-500 rounded-full font-bold">Health</span>
+          <span class="px-6 py-3 bg-cyan-500 rounded-full font-bold">Education</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-sm text-slate-500 py-8">
+    <p>Data from OECD Productivity Database via <span class="font-bold text-teal-600">OECD MCP Server</span></p>
+    <p class="mt-1">Dataset: PDB_LV • Reference Year: 2024 • SDMX API</p>
+  </footer>
+</body>
+</html>
