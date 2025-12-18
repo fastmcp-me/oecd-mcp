@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="700" height="220" alt="OECD MCP Server banner" src="assets/banner.svg" />
+  <img width="700" height="220" alt="OECD MCP Server banner" src="https://raw.githubusercontent.com/isakskogstad/OECD-MCP/main/assets/banner.svg" />
 </p>
 
 # OECD MCP Server
