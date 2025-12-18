@@ -339,17 +339,51 @@ export class OECDSDMXClient {
 
   // ========== PRIVATE PARSING METHODS ==========
 
+  /**
+   * Extract dimension metadata from SDMX-JSON response
+   * Returns arrays of dimension definitions with their possible values
+   */
+  private extractDimensionMetadata(data: any): {
+    seriesDimensions: Array<{ id: string; name: string; values: Array<{ id: string; name: string }> }>;
+    observationDimensions: Array<{ id: string; name: string; values: Array<{ id: string; name: string }> }>;
+  } {
+    const structures = data?.data?.structures || data?.structure?.dimensions || [];
+
+    // Try new SDMX-JSON format first
+    if (structures.length > 0 && structures[0]?.dimensions) {
+      const dims = structures[0].dimensions;
+      return {
+        seriesDimensions: dims.series || [],
+        observationDimensions: dims.observation || [],
+      };
+    }
+
+    // Try alternative structure format (data.structure.dimensions)
+    const altStructure = data?.structure?.dimensions;
+    if (altStructure) {
+      return {
+        seriesDimensions: altStructure.series || [],
+        observationDimensions: altStructure.observation || [],
+      };
+    }
+
+    return { seriesDimensions: [], observationDimensions: [] };
+  }
+
   private parseDataObservations(data: any, clientSideLimit?: number): SDMXObservation[] {
     try {
       // SDMX-JSON data format
       const observations: SDMXObservation[] = [];
       const datasets = data?.data?.dataSets || [];
 
+      // Extract dimension metadata for mapping indexes to real names
+      const { seriesDimensions, observationDimensions } = this.extractDimensionMetadata(data);
+
       for (const dataset of datasets) {
         const series = dataset.series || {};
 
         for (const [seriesKey, seriesData] of Object.entries(series)) {
-          const dimensions = this.parseSeriesKey(seriesKey);
+          const dimensions = this.parseSeriesKeyWithMetadata(seriesKey, seriesDimensions);
           const obs = (seriesData as any).observations || {};
 
           for (const [obsKey, obsValue] of Object.entries(obs)) {
@@ -361,10 +395,13 @@ export class OECDSDMXClient {
 
             const value = Array.isArray(obsValue) ? obsValue[0] : obsValue;
 
+            // Map observation dimension (usually TIME_PERIOD) using metadata
+            const timeDimension = this.mapObservationDimension(obsKey, observationDimensions);
+
             observations.push({
               dimensions: {
                 ...dimensions,
-                TIME_PERIOD: obsKey,
+                ...timeDimension,
               },
               value,
             });
@@ -379,15 +416,52 @@ export class OECDSDMXClient {
     }
   }
 
-  private parseSeriesKey(key: string): Record<string, string> {
-    // Series key format: "0:1:2:3" where numbers are dimension value indices
+  /**
+   * Parse series key with dimension metadata to get actual names and values
+   */
+  private parseSeriesKeyWithMetadata(
+    key: string,
+    seriesDimensions: Array<{ id: string; name: string; values: Array<{ id: string; name: string }> }>
+  ): Record<string, string> {
     const parts = key.split(':');
     const dimensions: Record<string, string> = {};
 
-    parts.forEach((part, index) => {
-      dimensions[`DIM_${index}`] = part;
+    parts.forEach((valueIndex, dimIndex) => {
+      const dimension = seriesDimensions[dimIndex];
+      if (dimension) {
+        // Get the actual value from the dimension's values array
+        const valueObj = dimension.values[parseInt(valueIndex, 10)];
+        const actualValue = valueObj?.id || valueIndex;
+        dimensions[dimension.id] = actualValue;
+      } else {
+        // Fallback to DIM_X if no metadata available
+        dimensions[`DIM_${dimIndex}`] = valueIndex;
+      }
     });
 
     return dimensions;
+  }
+
+  /**
+   * Map observation dimension index to actual value (usually TIME_PERIOD)
+   */
+  private mapObservationDimension(
+    obsKey: string,
+    observationDimensions: Array<{ id: string; name: string; values: Array<{ id: string; name: string }> }>
+  ): Record<string, string> {
+    const result: Record<string, string> = {};
+
+    // Usually there's only one observation dimension (TIME_PERIOD)
+    const timeDim = observationDimensions[0];
+    if (timeDim) {
+      const valueObj = timeDim.values[parseInt(obsKey, 10)];
+      const actualValue = valueObj?.id || obsKey;
+      result[timeDim.id] = actualValue;
+    } else {
+      // Fallback
+      result['TIME_PERIOD'] = obsKey;
+    }
+
+    return result;
   }
 }
